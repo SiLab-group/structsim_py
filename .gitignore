@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments / uv
+.venv/
+uv.lock  # keep? see README — committed by default for apps, ignored here for a library-style repo
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.pyright/
+
+# Local run artifacts
+config.properties
+/tmp/structsim-*
+
+# OS
+.DS_Store
