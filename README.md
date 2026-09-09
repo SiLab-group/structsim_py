@@ -223,6 +223,18 @@ uv run pylint src/structsim
 uv run pyright
 ```
 
+## Acknowledgements
+
+- **Matthias Gaillard** — author of the Python migration this port is built on,
+  produced as part of his bachelor thesis *"MAIgration: How can generative AI
+  support developers in software migration projects?"* (2026), in which the
+  Java `structSim` framework was migrated to Python across twelve
+  generative-AI experiments. This repository packages his one-shot migration.
+- **René Schumann** and **Caroline Taramarcaz** (SiLab — Smart Infrastructure
+  Laboratory, HES-SO Valais/Wallis) — authors of the original Java `structSim`
+  framework and of the paper that introduced the structured-simulation approach
+  (see [Background & citation](#background--citation)).
+
 ## License & attribution
 
 Released under the MIT License (see `pyproject.toml`). The design and logic
@@ -230,4 +242,3 @@ originate with the SiLab group's Java `structSim` framework and the
 `structSim_py` migration study; please credit both when reusing this port. If
 the upstream Java framework's license imposes stricter terms, those govern the
 derived logic — confirm with the SiLab group before redistribution.
-```
