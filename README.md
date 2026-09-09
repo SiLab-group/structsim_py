@@ -25,6 +25,37 @@ Behaviour is intended to match the original Java framework. The class hierarchy,
 public method names, and the file-based I/O are preserved from the Java source
 referenced in the thesis.
 
+## Background & citation
+
+The *structured simulation* approach implemented here was introduced by the
+SiLab group (Smart Infrastructure Laboratory, HES-SO Valais/Wallis) as a means
+of systematically testing complex, adaptive, interacting systems. If you use
+this software in academic work, please cite the original paper:
+
+> René Schumann and Caroline Taramarcaz. **Towards Systematic Testing of
+> Complex Interacting Systems.** In F. Lorig, I. J. Timm, and P. Mertens (eds.),
+> *Proceedings of the First Workshop on Systemic Risks in Global Networks
+> (SysRisk 2019)*, co-located with the 14th International Conference on
+> Wirtschaftsinformatik (WI 2019), Siegen, Germany. CEUR Workshop Proceedings,
+> Vol. 2397, pp. 55–63, 2019. <https://ceur-ws.org/Vol-2397/paper8.pdf>
+
+```bibtex
+@inproceedings{schumann2019towards,
+  title     = {Towards Systematic Testing of Complex Interacting Systems},
+  author    = {Schumann, Ren{\'e} and Taramarcaz, Caroline},
+  editor    = {Lorig, Fabian and Timm, Ingo J. and Mertens, Peter},
+  booktitle = {Proceedings of the First Workshop on Systemic Risks in Global
+               Networks (SysRisk 2019)},
+  series    = {CEUR Workshop Proceedings},
+  volume    = {2397},
+  pages     = {55--63},
+  year      = {2019},
+  address   = {Siegen, Germany},
+  publisher = {CEUR-WS.org},
+  url       = {https://ceur-ws.org/Vol-2397/paper8.pdf}
+}
+```
+
 ## What's different from the raw migration
 
 This port keeps the migrated logic but makes it a proper, installable package:
