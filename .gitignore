@@ -6,9 +6,8 @@ __pycache__/
 build/
 dist/
 
-# Virtual environments / uv
+# Virtual environments (uv.lock is committed for reproducibility)
 .venv/
-uv.lock  # keep? see README — committed by default for apps, ignored here for a library-style repo
 
 # Tooling caches
 .pytest_cache/
@@ -17,7 +16,7 @@ uv.lock  # keep? see README — committed by default for apps, ignored here for 
 
 # Local run artifacts
 config.properties
-/tmp/structsim-*
+output/
 
 # OS
 .DS_Store

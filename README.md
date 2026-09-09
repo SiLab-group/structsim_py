@@ -39,6 +39,11 @@ This port keeps the migrated logic but makes it a proper, installable package:
     threads before returning.
   - `ExperimentSimulatorHandler.run` reads the queue with a timeout (instead of
     blocking forever) and `join()`s the result thread.
+  - `start_program` creates the base output/simulator directories up front. The
+    per-simulation folders are made with `os.mkdir` (faithful to Java, and
+    checked by a unit test), which fails silently if its parent is missing — so
+    without existing base directories a run produced no output and a flood of
+    `FileNotFoundError`s. A run now works whether or not you pre-create them.
 - **Tests runnable with a plain `pytest`** — a `conftest.py` supplies the
   `STRUCTSIM_PROJECT_DIR` the integration test needs.
 
@@ -84,10 +89,29 @@ The framework is driven by a `config.properties` file plus a parameters file.
 
    Add `-v` for debug logging.
 
-The example (in `structsim.gluecode.simulation.Simulation`) applies two
-additive modifiers to `val2`. Point `config.properties` at your own parameters
-file and swap in your own modifiers / `SimpleSimulationHandler` to run a real
-simulation.
+The example (in `structsim.gluecode.simulation.Simulation`) uses
+`MySimulatorHandler` — a `SimpleSimulationHandler` that runs the bundled
+`MySimulator` (`result = val1 * val2`) — so the run writes a real result to
+`pathToSimulatorResultFile` instead of an empty file. Point
+`config.properties` at your own parameters file and swap in your own modifiers
+/ handler to run a real simulation.
+
+### Simulators (the plug-in point)
+
+The framework is **simulator-agnostic**: `SimpleSimulationHandler.start_simulation`
+is a stub that only touches an empty result file (faithful to the Java
+original). To run an actual simulation you implement `start_simulation` to call
+your simulator. Two pieces ship as a reference:
+
+- **`MySimulator`** — a toy simulator: reads `val1`/`val2` from the input file
+  and writes their product.
+- **`MySimulatorHandler`** — a `SimpleSimulationHandler` subclass that wires
+  `MySimulator` into `start_simulation`. Used by the example above.
+
+Note: the framework calls `start_simulation` with the *global* `pathParameters`
+file, so `MySimulator`'s result reflects the base parameters (constant across
+environments), not each environment's modified parameters — a property of the
+framework's contract, not of the handler.
 
 ### Configuration reference
 
@@ -136,7 +160,8 @@ structsim/
 │   ├── experimenthandling/         # Environment, Parameter, Measure, Options,
 │   │                               #   ExperimentPlanGenerator / …SimulatorHandler / …ResultHandler
 │   ├── interfaces/                 # ABCs + StartProgram orchestration
-│   ├── gluecode/                   # ConcreteModifier, MySimulator, SimpleSimulationHandler, Simulation
+│   ├── gluecode/                   # ConcreteModifier, MySimulator, MySimulatorHandler,
+│   │                               #   SimpleSimulationHandler, Simulation
 │   └── util/                       # FileManagement
 └── tests/
     ├── unit/                       # unit tests (environment, fileManagement, gluecode)

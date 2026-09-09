@@ -1,3 +1,4 @@
+import os
 import threading
 from queue import PriorityQueue
 from typing import IO
@@ -30,6 +31,21 @@ class StartProgram:
         )
 
         base_env = Environment(0, list_param, 1.0)
+
+        # Ensure the base output/simulator directories exist. The framework's
+        # per-simulation folder creation uses os.mkdir (faithful to Java, and
+        # relied on by a unit test), which cannot create missing parents and
+        # fails silently when they are absent — leaving every _sim<ID> folder
+        # uncreated and flooding the run with FileNotFoundError. Creating these
+        # roots once here makes a run work regardless of whether the user
+        # pre-created the directories.
+        for directory in (
+            o.get_folder_path_out(),
+            o.get_path_simulator(),
+            os.path.dirname(o.get_path_to_simulator_result_file() or ""),
+        ):
+            if directory:
+                os.makedirs(directory, exist_ok=True)
 
         queue: PriorityQueue = PriorityQueue()
         result_queue: PriorityQueue = PriorityQueue()

@@ -1,5 +1,5 @@
 from structsim.gluecode.concrete_modifier import ConcreteModifier
-from structsim.gluecode.simple_simulation_handler import SimpleSimulationHandler
+from structsim.gluecode.my_simulator_handler import MySimulatorHandler
 from structsim.interfaces.start_program import StartProgram
 
 
@@ -10,6 +10,10 @@ class Simulation(StartProgram):
     def main(config_path: str = "config.properties") -> None:
         """Run the bundled example simulation.
 
+        Uses ``MySimulatorHandler`` so the run produces real
+        ``result=val1*val2`` output (via the bundled ``MySimulator``) rather
+        than empty result files.
+
         Args:
             config_path: Path to the ``config.properties`` file describing the
                 run (input/output paths and the cut-off planning strategy).
@@ -19,7 +23,7 @@ class Simulation(StartProgram):
             ConcreteModifier("val2", "+", 10.0, 0.5),
         ]
 
-        ssh = SimpleSimulationHandler(modifiers)
+        ssh = MySimulatorHandler(modifiers)
 
         with open(config_path, "rb") as config_file:
             StartProgram.start_program(config_file, ssh)
