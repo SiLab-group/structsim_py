@@ -1,210 +1,60 @@
-# Structsim_py
+# structsim_py
 
-A Python implementation of the [SiLab group's](https://github.com/SiLab-group/structSim)
-**structSim** structured-simulation framework.
+A Python port of the SiLab group's Java
+[`structSim`](https://github.com/SiLab-group/structSim) framework. It runs
+*structured* simulations: from a base set of parameters it applies a tree of
+modifiers to explore candidate environments, runs a simulator for each, and
+collects the results.
 
-The framework runs *structured* simulations. Starting from a base set of
-parameters, it applies a tree of **modifiers** to explore a space of candidate
-simulation *environments*, runs a simulator for each environment, and collects
-the results. How far the tree is explored is controlled by a **cut-off**
-strategy (a fixed number of steps, a probability threshold, or a wall-clock
-duration).
-
-## Description
-
-This repository is a clean, packaged Python port derived from the **one-shot /
-`aSimulationSystemHandler`** migration in the
-[`structSim_py`](https://github.com/Matthjass13/structSim_py) study — the
-bachelor thesis *"MAIgration: How can generative AI support developers in
-software migration projects?"* (Matthias Gaillard, 2026). In that study, the
-one-shot migration was the strongest overall: the highest raw test-pass rate
-and, by a clear margin, the lowest correction effort of the twelve migrations
-evaluated.
-
-Behaviour is intended to match the original Java framework. The class hierarchy, public method names, and the file-based I/O are preserved from the Java source referenced in the thesis.
-
-## Background & citation
-
-The *structured simulation* approach implemented here was introduced by the
-SiLab group (Smart Infrastructure Laboratory, HES-SO Valais/Wallis) as a means
-of systematically testing complex, adaptive, interacting systems. If you use
-this software in academic work, please cite the original paper:
-
-> René Schumann and Caroline Taramarcaz. **Towards Systematic Testing of
-> Complex Interacting Systems.** In F. Lorig, I. J. Timm, and P. Mertens (eds.),
-> *Proceedings of the First Workshop on Systemic Risks in Global Networks
-> (SysRisk 2019)*, co-located with the 14th International Conference on
-> Wirtschaftsinformatik (WI 2019), Siegen, Germany. CEUR Workshop Proceedings,
-> Vol. 2397, pp. 55–63, 2019. <https://ceur-ws.org/Vol-2397/paper8.pdf>
-
-```bibtex
-@inproceedings{schumann2019towards,
-  title     = {Towards Systematic Testing of Complex Interacting Systems},
-  author    = {Schumann, Ren{\'e} and Taramarcaz, Caroline},
-  editor    = {Lorig, Fabian and Timm, Ingo J. and Mertens, Peter},
-  booktitle = {Proceedings of the First Workshop on Systemic Risks in Global
-               Networks (SysRisk 2019)},
-  series    = {CEUR Workshop Proceedings},
-  volume    = {2397},
-  pages     = {55--63},
-  year      = {2019},
-  address   = {Siegen, Germany},
-  publisher = {CEUR-WS.org},
-  url       = {https://ceur-ws.org/Vol-2397/paper8.pdf}
-}
-```
-
-## Requirements
-
-- Python **3.10+**
-- No third-party runtime dependencies (standard library only).
-- [`uv`](https://docs.astral.sh/uv/) for environment management (recommended).
+This is the one-shot migration from Matthias Gaillard's bachelor thesis
+*"MAIgration: How can generative AI support developers in software migration
+projects?"* (2026) — [thesis](THESIS_URL) ·
+[study repo](https://github.com/Matthjass13/structSim_py).
 
 ## Install
+
+Requires Python 3.10+ and [uv](https://docs.astral.sh/uv/). No runtime dependencies.
 
 ```bash
 uv sync
 ```
 
-This creates a `.venv/` and installs the project (editable) plus the dev tools
-(`pytest`, `pylint`, `pyright`). To install as a plain tool without the dev
-group:
-
-```bash
-uv pip install .
-```
-
 ## Usage
 
-The framework is driven by a `config.properties` file plus a parameters file.
+```bash
+cp config.example.properties config.properties   # then edit the paths
+uv run structsim -c config.properties            # add -v for debug logging
+```
 
-1. Create a config from the template and edit the paths:
+The example runs the bundled `MySimulator` (`result = val1 * val2`). Swap in
+your own modifiers and handler for a real simulation.
 
-   ```bash
-   cp config.example.properties config.properties
-   ```
-
-2. Run the bundled example simulation:
-
-   ```bash
-   uv run structsim -c config.properties
-   # or, equivalently:
-   uv run python -m structsim -c config.properties
-   ```
-
-   Add `-v` for debug logging.
-
-The example (in `structsim.gluecode.simulation.Simulation`) uses
-`MySimulatorHandler` — a `SimpleSimulationHandler` that runs the bundled
-`MySimulator` (`result = val1 * val2`) — so the run writes a real result to
-`pathToSimulatorResultFile` instead of an empty file. Point
-`config.properties` at your own parameters file and swap in your own modifiers
-/ handler to run a real simulation.
-
-### Simulators (the plug-in point)
-
-The framework is **simulator-agnostic**: `SimpleSimulationHandler.start_simulation`
-is a stub that only touches an empty result file (faithful to the Java
-original). To run an actual simulation you implement `start_simulation` to call
-your simulator. Two pieces ship as a reference:
-
-- **`MySimulator`** — a toy simulator: reads `val1`/`val2` from the input file
-  and writes their product.
-- **`MySimulatorHandler`** — a `SimpleSimulationHandler` subclass that wires
-  `MySimulator` into `start_simulation`. Used by the example above.
-
-Note: the framework calls `start_simulation` with the *global* `pathParameters`
-file, so `MySimulator`'s result reflects the base parameters (constant across
-environments), not each environment's modified parameters — a property of the
-framework's contract, not of the handler.
-
-### Configuration reference
+### config.properties
 
 | Key | Meaning |
 |---|---|
-| `pathParameters` | Input parameter file (`key=value` lines, e.g. `val1=1.0`). |
-| `pathOUT` | Directory the framework writes its own results/summary to. |
-| `pathSimulator` | Directory representing the external simulator's workspace. |
-| `pathToSimulatorResultFile` | File the simulator writes its raw result to. |
-| `cuttOfPlanning` | Cut-off value, interpreted per `typeCuttOfPlanning`. |
-| `typeCuttOfPlanning` | `INT`, `CRITERIA`, `DAY`, `HOURS`, or `MINUTES`. |
+| `pathParameters` | Input parameter file (`key=value` lines). |
+| `pathOUT` | Where results and the summary are written. |
+| `pathSimulator` | Simulator workspace directory. |
+| `pathToSimulatorResultFile` | Raw result file the simulator writes. |
+| `cuttOfPlanning` | Cut-off value (interpreted per `typeCuttOfPlanning`). |
+| `typeCuttOfPlanning` | `INT` (N steps), `CRITERIA` (probability threshold), or `DAY`/`HOURS`/`MINUTES` (wall-clock). |
 
-Cut-off strategies:
-
-- **`INT`** — explore a fixed number of planning steps (`cuttOfPlanning` is an integer).
-- **`CRITERIA`** — keep exploring environments whose probability is above `cuttOfPlanning` (a float).
-- **`DAY` / `HOURS` / `MINUTES`** — explore for a wall-clock duration.
-
-## Using the library
-
-```python
-from structsim.gluecode.concrete_modifier import ConcreteModifier
-from structsim.gluecode.simple_simulation_handler import SimpleSimulationHandler
-from structsim.interfaces.start_program import StartProgram
-
-modifiers = [
-    ConcreteModifier("val2", "+", 1.0, 0.5),
-    ConcreteModifier("val2", "+", 10.0, 0.5),
-]
-handler = SimpleSimulationHandler(modifiers)
-
-with open("config.properties", "rb") as config:
-    StartProgram.start_program(config, handler)
-```
-
-## Project layout
-
-```
-structsim/
-├── pyproject.toml
-├── config.example.properties
-├── resources/
-│   └── parameters.txt              # sample input parameters
-├── src/structsim/
-│   ├── __main__.py                 # CLI: `structsim` / `python -m structsim`
-│   ├── experimenthandling/         # Environment, Parameter, Measure, Options,
-│   │                               #   ExperimentPlanGenerator / …SimulatorHandler / …ResultHandler
-│   ├── interfaces/                 # ABCs + StartProgram orchestration
-│   ├── gluecode/                   # ConcreteModifier, MySimulator, MySimulatorHandler,
-│   │                               #   SimpleSimulationHandler, Simulation
-│   └── util/                       # FileManagement
-└── tests/
-    ├── unit/                       # unit tests (environment, fileManagement, gluecode)
-    └── integration/                # end-to-end scenario tests
-```
-
-### Java to Python mapping
-
-| Java concept | Python equivalent |
-|---|---|
-| `abstract class` / `interface` | `ABC` with `@abstractmethod` |
-| multiple `implements` | multiple inheritance from ABC bases |
-| `Vector<T>` | `List[T]` |
-| `BlockingQueue` / `PriorityBlockingQueue` | `queue.Queue` / `queue.PriorityQueue` |
-| `Runnable` + `Thread` | `threading.Thread(target=obj.run)` |
-| `Calendar` + time units | `datetime` |
-| `Properties` file | plain `key=value` parsing |
-| `Logger` (log4j) | `logging` module |
-| `InputStream` | file object / `IO[bytes]` |
-| getters / setters | Python properties + explicit `get_*` / `set_*` methods |
-
-## Development
+## Tests
 
 ```bash
-uv run pytest              # run the full test suite
-uv run pytest tests/unit   # unit tests only
-uv run pylint src/structsim
-uv run pyright
+uv run pytest
 ```
 
-## Acknowledgements
+## Citation
 
-- **Matthias Gaillard** — author of the Python migration this port is built on,
-  produced as part of his bachelor thesis *"MAIgration: How can generative AI
-  support developers in software migration projects?"* (2026), in which the
-  Java `structSim` framework was migrated to Python across twelve
-  generative-AI experiments. This repository packages his one-shot migration.
-- **René Schumann** and **Caroline Taramarcaz** (SiLab — Smart Infrastructure
-  Laboratory, HES-SO Valais/Wallis) — authors of the original Java `structSim`
-  framework and of the paper that introduced the structured-simulation approach
-  (see [Background & citation](#background--citation)).
+If you use this in academic work, cite the paper that introduced the approach:
+
+> René Schumann and Caroline Taramarcaz. *Towards Systematic Testing of Complex
+> Interacting Systems.* SysRisk 2019, CEUR-WS Vol. 2397, pp. 55–63.
+> <https://ceur-ws.org/Vol-2397/paper8.pdf>
+
+## License
+
+Apache 2.0 — see [`LICENSE`](LICENSE). Copyright of the underlying framework
+remains with SI-Lab, HES-SO Valais/Wallis (René Schumann).
