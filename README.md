@@ -1,4 +1,4 @@
-# structsim
+# Structsim_py
 
 A Python implementation of the [SiLab group's](https://github.com/SiLab-group/structSim)
 **structSim** structured-simulation framework.
@@ -10,7 +10,7 @@ the results. How far the tree is explored is controlled by a **cut-off**
 strategy (a fixed number of steps, a probability threshold, or a wall-clock
 duration).
 
-## Provenance
+## Description
 
 This repository is a clean, packaged Python port derived from the **one-shot /
 `aSimulationSystemHandler`** migration in the
@@ -21,9 +21,7 @@ one-shot migration was the strongest overall: the highest raw test-pass rate
 and, by a clear margin, the lowest correction effort of the twelve migrations
 evaluated.
 
-Behaviour is intended to match the original Java framework. The class hierarchy,
-public method names, and the file-based I/O are preserved from the Java source
-referenced in the thesis.
+Behaviour is intended to match the original Java framework. The class hierarchy, public method names, and the file-based I/O are preserved from the Java source referenced in the thesis.
 
 ## Background & citation
 
@@ -55,30 +53,6 @@ this software in academic work, please cite the original paper:
   url       = {https://ceur-ws.org/Vol-2397/paper8.pdf}
 }
 ```
-
-## What's different from the raw migration
-
-This port keeps the migrated logic but makes it a proper, installable package:
-
-- **`src/` layout** with a single top-level `structsim` package (the migration
-  used four top-level packages sitting on `PYTHONPATH`).
-- **Packaging** via `pyproject.toml` (PEP 621) with a `structsim` console script
-  and `python -m structsim` entry point.
-- **Two robustness fixes** the thesis identified in its *slowness* analysis, so
-  the pipeline runs to completion deterministically rather than racing:
-  - `StartProgram.start_program` now `join()`s the planning and simulation
-    threads before returning.
-  - `ExperimentSimulatorHandler.run` reads the queue with a timeout (instead of
-    blocking forever) and `join()`s the result thread.
-  - `start_program` creates the base output/simulator directories up front. The
-    per-simulation folders are made with `os.mkdir` (faithful to Java, and
-    checked by a unit test), which fails silently if its parent is missing — so
-    without existing base directories a run produced no output and a flood of
-    `FileNotFoundError`s. A run now works whether or not you pre-create them.
-- **Tests runnable with a plain `pytest`** — a `conftest.py` supplies the
-  `STRUCTSIM_PROJECT_DIR` the integration test needs.
-
-No functionality was added or removed beyond these fixes.
 
 ## Requirements
 
@@ -199,7 +173,7 @@ structsim/
     └── integration/                # end-to-end scenario tests
 ```
 
-### Java → Python mapping
+### Java to Python mapping
 
 | Java concept | Python equivalent |
 |---|---|
@@ -234,11 +208,3 @@ uv run pyright
   Laboratory, HES-SO Valais/Wallis) — authors of the original Java `structSim`
   framework and of the paper that introduced the structured-simulation approach
   (see [Background & citation](#background--citation)).
-
-## License & attribution
-
-Released under the MIT License (see `pyproject.toml`). The design and logic
-originate with the SiLab group's Java `structSim` framework and the
-`structSim_py` migration study; please credit both when reusing this port. If
-the upstream Java framework's license imposes stricter terms, those govern the
-derived logic — confirm with the SiLab group before redistribution.
