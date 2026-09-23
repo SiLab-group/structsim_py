@@ -4,12 +4,14 @@ version = "0.1.0"
 description = "Python migration of the SiLab group's Java structSim structured-simulation framework."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
+license-files = ["LICENSE"]
 authors = [
     { name = "Matthias Gaillard" },
 ]
 keywords = ["simulation", "structured-simulation", "silab", "structsim"]
 classifiers = [
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Intended Audience :: Science/Research",
