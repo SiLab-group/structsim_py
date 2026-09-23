@@ -11,20 +11,33 @@ This is the one-shot migration from Matthias Gaillard's bachelor thesis
 projects?"* (2026) — [thesis](THESIS_URL) ·
 [study repo](https://github.com/Matthjass13/structSim_py).
 
-## Install
+## Setup
 
-Requires Python 3.10+ and [uv](https://docs.astral.sh/uv/). No runtime dependencies.
+Requires **Python 3.10+**. There are no runtime dependencies (standard library
+only); the dev tools (`pytest`, `pylint`, `pyright`) are installed for you.
+
+Using [uv](https://docs.astral.sh/uv/) (recommended) — creates a `.venv` and
+installs the package plus dev tools:
 
 ```bash
 uv sync
 ```
 
-## Usage
+Or with plain pip:
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e .              # add: pip install pytest pylint pyright  (for dev)
+```
+
+## Run
 
 ```bash
 cp config.example.properties config.properties   # then edit the paths
 uv run structsim -c config.properties            # add -v for debug logging
 ```
+
+Equivalent without the console script: `uv run python -m structsim -c config.properties`.
 
 The example runs the bundled `MySimulator` (`result = val1 * val2`). Swap in
 your own modifiers and handler for a real simulation.
